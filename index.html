@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dragon Ball - Personajes</title>
+    <link rel="stylesheet" href="style.css">
+    
+
+</head>
+<body>
+
+    <header>
+        <h1>Dragon Ball - Personajes</h1>
+        <p>Selecciona una raza para ver sus personajes</p>
+    </header>
+
+    <div class="contenedor">
+
+        
+        <div class="selector-raza">
+            <label for="select-raza">Raza:</label>
+            <select id="select-raza">
+                <option value="">-- Selecciona --</option>
+                <option value="Human">Humano</option>
+                <option value="Saiyan">Saiyajin</option>
+                <option value="Namekian">Namekiano</option>
+            </select>
+            <button id="btn-mostrar">Mostrar</button>
+        </div>
+
+        <p id="mensaje-cargando">Cargando personajes...</p>
+
+  
+        <div id="seccion-tabla">
+            <h2 id="titulo-tabla">Personajes</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Ki</th>
+                        <th>Género</th>
+                        <th>Imagen</th>
+                        <th>Detalle</th>
+                    </tr>
+                </thead>
+                <tbody id="cuerpo-tabla"></tbody>
+            </table>
+        </div>
+
+
+        <div id="seccion-detalle">
+            <button class="btn-volver" id="btn-volver">← Volver a la lista</button>
+            <div id="contenido-detalle"></div>
+        </div>
+
+    </div>
+
+    <div id="modal-imagen">
+        <div class="modal-caja">
+            <img id="modal-img" src="" alt="">
+            <h3 id="modal-nombre"></h3>
+            <button class="btn-cerrar" id="btn-cerrar">Cerrar</button>
+        </div>
+    </div>
+
+    <script src="api.js"></script>
+
+
+</body>
+</html>
