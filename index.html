@@ -4,20 +4,197 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dragon Ball - Personajes</title>
-    <link rel="stylesheet" href="style.css">
-    
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 0;
+        }
 
+        header {
+            background-color: #e65c00;
+            color: white;
+            text-align: center;
+            padding: 20px;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 2rem;
+        }
+
+        header p {
+            margin: 5px 0 0;
+            font-size: 0.95rem;
+        }
+
+        .contenedor {
+            max-width: 1100px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        /* --- SELECTOR --- */
+        .selector-raza {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .selector-raza label {
+            font-weight: bold;
+        }
+
+        .selector-raza select {
+            padding: 8px 12px;
+            font-size: 1rem;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .selector-raza button {
+            padding: 8px 20px;
+            background-color: #e65c00;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+
+        .selector-raza button:hover {
+            background-color: #c94e00;
+        }
+
+        /* --- TABLA --- */
+        #seccion-tabla {
+            display: none;
+            margin-top: 30px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+            padding: 20px;
+        }
+
+        #seccion-tabla h2 {
+            margin-top: 0;
+            color: #e65c00;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        table th {
+            background-color: #e65c00;
+            color: white;
+            padding: 10px;
+            text-align: left;
+        }
+
+        table td {
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        table tr:hover {
+            background-color: #fef3ec;
+        }
+
+        .btn-ver {
+            padding: 5px 14px;
+            background-color: #2979ff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        .btn-ver:hover {
+            background-color: #1a5fd6;
+        }
+
+        /* --- MENSAJES --- */
+        #mensaje-cargando {
+            display: none;
+            margin-top: 15px;
+            color: #555;
+            font-style: italic;
+        }
+
+        /* --- DETALLE (en construcción) --- */
+        #seccion-detalle {
+            display: none;
+            margin-top: 30px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+            padding: 20px;
+        }
+
+        .btn-volver {
+            padding: 7px 18px;
+            background-color: #555;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            margin-bottom: 20px;
+        }
+
+        .btn-volver:hover {
+            background-color: #333;
+        }
+
+        .detalle-superior {
+            display: flex;
+            gap: 25px;
+            flex-wrap: wrap;
+        }
+
+        .detalle-superior img {
+            width: 180px;
+            height: 220px;
+            object-fit: contain;
+            border: 2px solid #e65c00;
+            border-radius: 8px;
+        }
+
+        .detalle-info h2 {
+            margin-top: 0;
+            color: #e65c00;
+        }
+
+        .detalle-info p {
+            margin: 5px 0;
+            font-size: 0.95rem;
+        }
+
+        .detalle-info p span {
+            font-weight: bold;
+        }
+    </style>
 </head>
 <body>
 
     <header>
-        <h1>Dragon Ball - Personajes</h1>
+        <h1>🐉 Dragon Ball - Personajes</h1>
         <p>Selecciona una raza para ver sus personajes</p>
     </header>
 
     <div class="contenedor">
 
-        
+        <!-- SELECTOR DE RAZA -->
         <div class="selector-raza">
             <label for="select-raza">Raza:</label>
             <select id="select-raza">
@@ -31,7 +208,7 @@
 
         <p id="mensaje-cargando">Cargando personajes...</p>
 
-  
+        <!-- TABLA DE PERSONAJES -->
         <div id="seccion-tabla">
             <h2 id="titulo-tabla">Personajes</h2>
             <table>
@@ -48,7 +225,7 @@
             </table>
         </div>
 
-
+        <!-- DETALLE DEL PERSONAJE (en progreso) -->
         <div id="seccion-detalle">
             <button class="btn-volver" id="btn-volver">← Volver a la lista</button>
             <div id="contenido-detalle"></div>
@@ -56,16 +233,134 @@
 
     </div>
 
-    <div id="modal-imagen">
-        <div class="modal-caja">
-            <img id="modal-img" src="" alt="">
-            <h3 id="modal-nombre"></h3>
-            <button class="btn-cerrar" id="btn-cerrar">Cerrar</button>
-        </div>
-    </div>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
 
-    <script src="api.js"></script>
+            const selectRaza      = document.querySelector("#select-raza")
+            const btnMostrar      = document.querySelector("#btn-mostrar")
+            const mensajeCargando = document.querySelector("#mensaje-cargando")
+            const seccionTabla    = document.querySelector("#seccion-tabla")
+            const tituloTabla     = document.querySelector("#titulo-tabla")
+            const cuerpoTabla     = document.querySelector("#cuerpo-tabla")
+            const seccionDetalle  = document.querySelector("#seccion-detalle")
+            const contenidoDetalle = document.querySelector("#contenido-detalle")
+            const btnVolver       = document.querySelector("#btn-volver")
 
+            const razasEnEspanol = {
+                "Human":    "Humano",
+                "Saiyan":   "Saiyajin",
+                "Namekian": "Namekiano"
+            }
+
+            // ── BOTÓN MOSTRAR ──
+            btnMostrar.addEventListener("click", function() {
+                const razaSeleccionada = selectRaza.value
+
+                if (razaSeleccionada === "") {
+                    alert("Por favor selecciona una raza primero.")
+                    return
+                }
+
+                mensajeCargando.style.display = "block"
+                seccionTabla.style.display    = "none"
+                seccionDetalle.style.display  = "none"
+
+                fetch("https://dragonball-api.com/api/characters?race=" + razaSeleccionada + "&limit=50")
+                .then(function(response) {
+                    if (response.ok) {
+                        return response.json()
+                    }
+                })
+                .then(function(data) {
+                    mensajeCargando.style.display = "none"
+
+                    const personajes = data.items || data
+
+                    tituloTabla.innerHTML = "Personajes - " + razasEnEspanol[razaSeleccionada]
+
+                    cuerpoTabla.innerHTML = ""
+
+                    personajes.forEach(function(personaje) {
+                        const fila = document.createElement("tr")
+                        fila.innerHTML = `
+                            <td>${personaje.name}</td>
+                            <td>${personaje.ki || "—"}</td>
+                            <td>${personaje.gender || "—"}</td>
+                            <td>
+                                <img src="${personaje.image}" alt="${personaje.name}" width="50" height="60"
+                                    style="object-fit:contain; border-radius:4px;">
+                            </td>
+                            <td>
+                                <button class="btn-ver" data-id="${personaje.id}">Ver</button>
+                            </td>
+                        `
+                        cuerpoTabla.appendChild(fila)
+                    })
+
+                    seccionTabla.style.display = "block"
+                })
+                .catch(function(error) {
+                    mensajeCargando.style.display = "none"
+                    console.error(error)
+                    alert("Hubo un error al obtener los personajes.")
+                })
+            })
+
+            // ── CLIC EN BOTÓN VER ──
+            cuerpoTabla.addEventListener("click", function(e) {
+                if (e.target.classList.contains("btn-ver")) {
+                    const idPersonaje = e.target.getAttribute("data-id")
+                    cargarDetalle(idPersonaje)
+                }
+            })
+
+            // ── CARGAR DETALLE ──
+            function cargarDetalle(id) {
+                contenidoDetalle.innerHTML = "<p>Cargando...</p>"
+                seccionTabla.style.display   = "none"
+                seccionDetalle.style.display = "block"
+
+                fetch("https://dragonball-api.com/api/characters/" + id)
+                .then(function(response) {
+                    if (response.ok) {
+                        return response.json()
+                    }
+                })
+                .then(function(p) {
+                    console.log(p)
+
+                    contenidoDetalle.innerHTML = `
+                        <div class="detalle-superior">
+                            <img src="${p.image}" alt="${p.name}">
+                            <div class="detalle-info">
+                                <h2>${p.name}</h2>
+                                <p><span>Raza:</span> ${razasEnEspanol[p.race] || p.race || "—"}</p>
+                                <p><span>Género:</span> ${p.gender || "—"}</p>
+                                <p><span>Ki:</span> ${p.ki || "—"}</p>
+                                <p><span>Ki máximo:</span> ${p.maxKi || "—"}</p>
+                                <p><span>Afiliación:</span> ${p.affiliation || "—"}</p>
+                                <p><span>Descripción:</span> ${p.description || "Sin descripción."}</p>
+                                <p style="color:#888; font-style:italic; margin-top:15px;">
+                                    ⚙️ Sección de transformaciones en construcción...
+                                </p>
+                            </div>
+                        </div>
+                    `
+                })
+                .catch(function(error) {
+                    console.error(error)
+                    contenidoDetalle.innerHTML = "<p>Error al cargar el personaje.</p>"
+                })
+            }
+
+            // ── VOLVER ──
+            btnVolver.addEventListener("click", function() {
+                seccionDetalle.style.display = "none"
+                seccionTabla.style.display   = "block"
+            })
+
+        })
+    </script>
 
 </body>
 </html>
