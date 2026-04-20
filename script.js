@@ -48,25 +48,29 @@ document.addEventListener("DOMContentLoaded", function() {
 
             cuerpoTabla.innerHTML = ""
 
-            personajes.forEach(function(personaje) {
-                const fila = document.createElement("tr")
-                fila.innerHTML = `
-                    <td>${personaje.name}</td>
-                    <td>${personaje.ki || "—"}</td>
-                    <td>${personaje.gender || "—"}</td>
-                    <td>
-                        <button class="btn-lupa"
-                            data-img="${personaje.image}"
-                            data-nombre="${personaje.name}">
-                            🔍
-                        </button>
-                    </td>
-                    <td>
-                        <button class="btn-ver" data-id="${personaje.id}">Ver</button>
-                    </td>
-                `
-                cuerpoTabla.appendChild(fila)
-            })
+            if (personajes.length === 0) {
+                cuerpoTabla.innerHTML = "<tr><td colspan='5'>No se encontraron personajes.</td></tr>"
+            } else {
+                personajes.forEach(function(personaje) {
+                    const fila = document.createElement("tr")
+                    fila.innerHTML = `
+                        <td>${personaje.name}</td>
+                        <td>${personaje.ki || "—"}</td>
+                        <td>${personaje.gender || "—"}</td>
+                        <td>
+                            <button class="btn-lupa"
+                                data-img="${personaje.image}"
+                                data-nombre="${personaje.name}">
+                                🔍
+                            </button>
+                        </td>
+                        <td>
+                            <button class="btn-ver" data-id="${personaje.id}">Ver</button>
+                        </td>
+                    `
+                    cuerpoTabla.appendChild(fila)
+                })
+            }
 
             seccionTabla.style.display = "block"
         })
@@ -96,7 +100,7 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     })
 
-    // ── CARGAR DETALLE ──
+    // ── CARGAR DETALLE DEL PERSONAJE ──
     function cargarDetalle(id) {
         contenidoDetalle.innerHTML = "<p>Cargando...</p>"
         seccionTabla.style.display   = "none"
@@ -110,6 +114,24 @@ document.addEventListener("DOMContentLoaded", function() {
         })
         .then(function(p) {
             console.log(p)
+
+            // Construir las tarjetas de transformaciones
+            let htmlTransformaciones = ""
+
+            if (p.transformations && p.transformations.length > 0) {
+                p.transformations.forEach(function(t) {
+                    htmlTransformaciones += `
+                        <div class="tarjeta-transf">
+                            <img src="${t.image}" alt="${t.name}"
+                                onerror="this.src='https://placehold.co/160x130?text=Sin+imagen'">
+                            <p>${t.name}</p>
+                            <small>${t.ki ? "Ki: " + t.ki : ""}</small>
+                        </div>
+                    `
+                })
+            } else {
+                htmlTransformaciones = "<p>Este personaje no tiene transformaciones registradas.</p>"
+            }
 
             contenidoDetalle.innerHTML = `
                 <div class="detalle-superior">
@@ -127,8 +149,10 @@ document.addEventListener("DOMContentLoaded", function() {
                 </div>
 
                 <div class="transformaciones">
-                    <h3>Transformaciones</h3>
-                    <p style="color:#888; font-style:italic;">⚙️ Sección en construcción...</p>
+                    <h3>Transformaciones (${p.transformations ? p.transformations.length : 0})</h3>
+                    <div class="lista-transformaciones">
+                        ${htmlTransformaciones}
+                    </div>
                 </div>
             `
         })
@@ -138,7 +162,7 @@ document.addEventListener("DOMContentLoaded", function() {
         })
     }
 
-    // ── VOLVER ──
+    // ── VOLVER A LA TABLA ──
     btnVolver.addEventListener("click", function() {
         seccionDetalle.style.display = "none"
         seccionTabla.style.display   = "block"
